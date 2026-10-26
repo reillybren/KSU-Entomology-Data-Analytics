@@ -1,0 +1,848 @@
+---
+title: 'Intro to R for Entomologists: Worksheet 1'
+author: "Your name here"
+output:
+  pdf_document: default
+  html_document: default
+editor_options:
+  chunk_output_type: inline
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include = FALSE}
+# Lets the file knit (save to a pdf, doc, html)
+# even if some exercises aren't finished yet
+knitr::opts_chunk$set(error = TRUE)
+```
+
+**collapse parts**
+
+# Before you start
+
+This file is a worksheet. You will read a little, run some code, and
+then write some code yourself.
+
+**How to run code** the grey boxes are code chunks: - Click the green
+arrow at the top right of a chunk, OR -Put your cursor on a line and
+press **Ctrl + Enter** (Mac: **Cmd + Enter**).
+
+The result appears right under the code chunk. \*\*"Your turn" chunks
+have blanks (\_\_\_).\*\* Replace each blank with code, then run the
+chunk. Questions marked **Your answer:** are for typing words, not code.
+
+**Errors are normal.** Read the red message, fix the code, and run it
+again. Open this course folder by double-clicking
+`intro-r-entomology.Rproj`, then open this file from the Files pane. The
+`data` folder must sit next to this file.
+
+# Part 1: What is R?
+
+**R** is a free programming language for working with data: cleaning it,
+analyzing it, and making figures.
+
+**RStudio** is the program you are using right now. It is where you
+write and run R code. Think of R as the engine and RStudio as the
+dashboard.
+
+RStudio has four panes:
+
+- **Source** (where this file is open): where you write code you want to
+  keep.
+- **Console**: where code runs. Good for quick checks, but nothing is
+  saved.
+- **Environment**: every object you have created.
+- **Files / Plots / Packages / Help**: your folders, your figures, and
+  help pages.
+
+Run your first line of R:
+
+```{r}
+2 + 2
+```
+
+R can work like a calculator:
+
+```{r}
+120 / 8    # 120 mosquitoes caught in 8 traps
+```
+
+Anything after \# is a **comment**. R ignores it. Comments are notes to
+yourself and to other people.
+
+**Your turn:** An adult tick has 8 legs. How many legs do 25 adult ticks
+have?
+
+```{r}
+___
+```
+
+# Part 2: What is R good for ?
+
+Entomologists use R to: - clean and combine field data (weekly trap
+sheets from 20 sites) - make figures (e.g. seasonal activity of tick
+life stages) - run statistics (e.g., do trap catches differ between
+habitats?) - analyze bioassays (e.g., LC50 of an insecticide) - measure
+diversity of insect communities (e.g., pitfall-trap beetles) - make maps
+of collection sites - work with DNA sequences and phylogenetic trees -
+write reports where the numbers and figures update themselves
+
+R is **not** the best tool for typing in data in the field (use a
+datasheet or spreadsheet) or for some huge genomics jobs (other tools do
+those, and R analyzes the results or can make figures).
+
+R comes with some practice datasets. `InsectSprays` has counts of
+insects on plots treated with six sprays (A to F). We can use this
+practice dataset to get familiar with some basic R usage.
+
+```{r}
+head(InsectSprays) #take a look at the sample dataset
+```
+
+```{r}
+boxplot(count ~ spray, data = InsectSprays) #quick boxplot
+```
+
+Two short lines took us from data to a figure.
+
+**Your turn:** Which sprays look like they worked best?
+
+**Your answer:**
+
+# Part 3: Packages
+
+R comes with many built-in functions. **Packages** add more. A package
+is a bundle of functions that someone wrote for a specific job. They are
+like apps on a phone.
+
+There are two steps, installing and loading packages-
+
+| Step \| Code \| How often \|
+| Install \| `install.packages("tidyverse")`\| Once per computer \|
+| Load \| `library(tidyverse)` \| Every time you open R \|
+
+`install.packages()` needs quotes and `library()` does not.
+
+If you have never installed the tidyverse, remove the `#` below and run
+the line once. Then put the `#` back. The \# comments out the text after
+it so that it is not run as code.
+
+```{r}
+# install.packages("tidyverse")
+```
+
+Now load it. This worksheet uses it from Part 5 onward.
+
+```{r}
+library(tidyverse)
+```
+
+The messages are normal. The **tidyverse** is a family of packages for
+reading, cleaning, and plotting data.
+
+Other packages entomologists often use: - `vegan`: community diversity
+and ordination - `drc`: dose-response curves and LC50 - `lme4` and
+`glmmTMB`: models for counts with repeated sampling - `sf`: maps and
+spatial data - `rgbif`: download species occurrence records - `ape`: DNA
+sequences and phylogenetic trees
+
+**Getting help:** put `?` in front of a function name.
+
+```{r}
+?mean
+```
+
+**Your turn:** Open the help page for `boxplot`.
+
+```{r}
+___
+```
+
+# Part 4: Basic R syntax
+
+## Objects
+
+Save a value with `<-`. Read it as "gets": `nymphs` gets 14. (Keyboard
+shortcut: **Alt + -**, or **Option + -** on a Mac.)
+
+```{r}
+nymphs <- 14
+nymphs 
+```
+
+```{r}
+adults <- 3
+nymphs + adults
+```
+
+Look at the **Environment** pane. `nymphs` and `adults` are now listed
+there.
+
+Naming rules: - No spaces. Use `_` instead: `trap_count`, not
+`trap count`. - Don't start with a number. - Capitals matter: `Nymphs`
+and `nymphs` are different objects.
+
+**Your turn:** Create `larvae` with the value 120. Then add up larvae,
+nymphs, and adults and save the result as `total_ticks`.
+
+```{r}
+larvae <- ___
+total_ticks <- ___
+total_ticks
+```
+
+## Functions
+
+A **function** does a job. You give it inputs inside parentheses.
+
+```{r}
+sqrt(144) #'sqrt' is the function here
+```
+
+```{r}
+round(3.14159, digits = 2) #`round` is the function here and `digits` is an argument
+```
+
+`digits = 2` is an **argument**: an extra setting for the function. If
+you want to know the possible/needed arguments for a function, you can
+type args(`the function`)
+
+## Vectors
+
+A **vector** is a set of values. Make one with `c()` (for "combine").
+
+```{r}
+wing_mm <- c(2.81, 2.95, 3.10, 2.67, 3.02)   # mosquito wing lengths
+wing_mm
+```
+
+Functions work on the whole vector at once:
+
+```{r}
+mean(wing_mm)
+```
+
+```{r}
+wing_mm * 1000   # convert mm to micrometres
+```
+
+**Your turn:** Find the longest wing, the shortest wing, and how many
+wings were measured. Use `max()`, `min()`, and `length()`.
+
+```{r}
+___
+___
+___
+```
+
+Pull out values with square brackets `[ ]`:
+
+```{r}
+wing_mm[2]   # the 2nd value
+```
+
+```{r}
+wing_mm[wing_mm > 3]   # only the values bigger than 3
+```
+
+**Your turn:** Show only the wings shorter than 2.9 mm.
+
+```{r}
+wing_mm[___]
+```
+
+## Types of data
+
+```{r}
+class(14)                   # a number
+class("Aedes albopictus")   # text (always in quotes)
+class(TRUE)                 # TRUE or FALSE
+```
+
+**Your turn:** What type is `wing_mm`? What type is `"nymph"`?
+
+```{r}
+class(___)
+class(___)
+```
+
+A **factor** is a set of categories. R puts categories in alphabetical
+order unless you tell it otherwise:
+
+```{r}
+stage <- c("nymph", "adult", "larva", "nymph")
+factor(stage)
+```
+
+```{r}
+factor(stage, levels = c("larva", "nymph", "adult"))
+```
+
+The second version is in biological order.
+
+**Dates** are their own type. Always write them as year-month-day.
+
+```{r}
+collected <- as.Date("2025-06-17")
+emerged <- as.Date("2025-07-02")
+emerged - collected
+```
+
+## Missing values
+
+`NA` means "missing"
+
+```{r}
+trap_counts <- c(12, 0, 7, NA, 25)
+mean(trap_counts)
+```
+
+R gives `NA` because it can't average a value it doesn't know.
+
+**Your turn:** Add `na.rm = TRUE` ("remove NAs") inside `mean()`.
+
+```{r}
+mean(trap_counts, ___)
+```
+
+**A zero is not the same as `NA`.** `0` means the trap ran and caught
+nothing. `NA` means we have no data. Never type a broken trap in as 0.
+
+## Data frames
+
+A **data frame** is a table, like a spreadsheet. Each column is a
+vector. Here is a made up data frame for tick life stage and
+engorgement.
+
+```{r}
+specimens <- data.frame(
+  id        = c("T1", "T2", "T3", "T4"),
+  species   = c("Amblyomma americanum", "Amblyomma americanum",
+                "Dermacentor variabilis", "Dermacentor variabilis"),
+  stage     = c("adult", "nymph", "adult", "adult"),
+  engorged  = c(FALSE, TRUE, FALSE, TRUE),
+  weight_mg = c(3.8, 5.1, 3.1, 412)
+)
+
+specimens
+
+```
+
+Use `$` to pull out one column:
+
+```{r}
+specimens$weight_mg
+```
+
+**Your turn:** Find the mean and the median of `weight_mg`.
+
+```{r}
+___
+___
+```
+
+**Your turn:** Why is the mean so much bigger than the median?
+
+**Your answer:**
+
+## Writing your own function
+
+Degree-days measure heat available for insect development. Here is a
+simple version as a function:
+
+```{r}
+degree_days <- function(tmin, tmax, tbase = 10) {
+  (tmin + tmax) / 2 - tbase
+}
+
+degree_days(tmin = 12, tmax = 26)
+```
+
+(This simple version doesn't handle days colder than `tbase`.)
+
+**Your turn:** Calculate degree-days for a day with a low of 15 °C and a
+high of 31 °C. Then do it again with a base temperature of 12 °C.
+
+```{r}
+degree_days(tmin = __, tmax =__)
+degree_days(tmin = 15, tmax = 31, tbase = __)
+```
+
+**Your turn:** Finish this function so it converts millimetres to
+micrometres.
+
+```{r}
+mm_to_um <- function(mm) {
+  ___
+}
+
+mm_to_um(wing_mm)
+```
+
+## Error messages
+
+Run this chunk. It gives an error on purpose.
+
+```{r}
+mean(wing_length)
+```
+
+"object not found" means R doesn't know that name. Usually it's a typo,
+or you haven't run the line that creates the object yet.
+
+**Your turn:** Fix the typo.
+
+```{r}
+mean()
+```
+
+# Part 5: File types
+
+| File type       | What it is                 | Read it with            |
+|-----------------|----------------------------|-------------------------|
+| `.R`            | R script (code only)       | open in RStudio         |
+| `.Rmd`          | R Markdown, like this file | open in RStudio         |
+| `.Rproj`        | RStudio project            | double-click            |
+| `.csv`          | table saved as plain text  | `read_csv()`            |
+| `.xlsx`         | Excel workbook             | `read_excel()` (readxl) |
+| `.rds`          | one saved R object         | `readRDS()`             |
+| `.fasta`        | DNA sequences              | `read.FASTA()` (ape)    |
+| `.shp`, `.gpkg` | map data                   | `st_read()` (sf)        |
+
+**CSV is the best format for sharing data.**
+
+A CSV is just text with commas. Here are the first 5 lines of a
+tick-drag data file:
+
+```{r}
+readLines("data/tick_drags.csv", n = 5)
+```
+
+Read it into R as a table:
+
+```{r}
+ticks <- read_csv("data/tick_drags.csv")
+ticks
+```
+
+The message tells you what type R guessed for each column (`chr` = text,
+`dbl` = number, `date` = date).
+
+`ticks` is now in your Environment. To see it like a spreadsheet, type
+`View(ticks)` in the **Console**, or click `ticks` in the Environment
+pane.
+
+**Your turn:** Read `data/sites.csv` into an object called `sites`.
+
+```{r}
+sites <- ___
+sites
+```
+
+**Careful with Excel.** Excel can quietly changes data. It turns the
+vial ID `007` into `7`, the ID `3E10` into 30000000000, and some text
+into dates. If you enter data in Excel, format ID columns as **Text**,
+and make sure you inspect the data before manipulating.
+
+**Pause** here to show how to start a new Rmd or Rscript file
+
+# Part 6: Data organization
+
+Data are consdiered to be 'tidy' when: 1. Each **variable** has its own
+column. 2. Each **observation** has its own row. 3. Each **value** has
+its own cell.
+
+Good habits for data sheets:
+
+- One table per sheet, starting in the top-left cell.
+- One header row. Short names with no spaces: `temp_c`, not `Temp (°C)`.
+- Dates as `2025-06-17`.
+- Put units in the column name (`weight_mg`), not in the cells (`5 mg`).
+- Don't use colour or bold as data. Add a column instead.
+- Be consistent: `forest`, `Forest`, and `forest` are 3 different things
+  to R.
+- Leave missing values blank. Use 0 only for a true zero.
+- Never edit the original data file. Make all changes in code.
+
+Here is a mosquito trap sheet:
+
+```{r}
+mosquitoes <- read_csv("data/mosquito_traps_wide.csv")
+mosquitoes
+```
+
+**Your turn:** Why is this table *not* tidy?
+
+**Your answer:**
+
+**Your turn:** Trap T1 has `NA` in week 25. Trap T2 caught `0` *Aedes
+vexans* in week 23. What is the difference?
+
+**Your answer:**
+
+`pivot_longer()` makes it tidy by stacking the week columns into one
+column:
+
+```{r}
+mosquitoes_long <- pivot_longer(mosquitoes,
+                                cols = c(wk23, wk24, wk25, wk26),
+                                names_to = "week",
+                                values_to = "count")
+mosquitoes_long
+```
+
+**Your turn:** How many rows did the table have before and after?
+
+```{r}
+nrow(mosquitoes)
+nrow(___)
+```
+
+**Organize each project in one folder.** This course folder looks like
+this:
+
+```         
+intro_to_R/
+├──  intro-r-entomology.Rproj
+├── 01_intro_to_R.Rmd
+├── data/        <- original data. Never edit by hand.
+└── output/      <- tables and figures made by code (we will make this folder)
+```
+
+Name files without spaces, with the date first:
+`2025-06-17_S03_drag.csv`, not `June data FINAL v2.xlsx`.
+
+# Part 7: A data workflow
+
+Almost every analysis follows these steps:
+
+**Import \> Look \> Clean \> Add columns \> Combine \> Summarize \> Plot
+\> Save** Always save the original data and cleaned data separately.
+
+We will use the tick-drag data: 6 sites in 3 habitats, sampled every 2
+weeks.
+
+## The pipe: `|>`
+
+The pipe sends the result on its left into the next function. Read it as
+"and then."
+
+```{r}
+round(mean(wing_mm), 1)        # read from the inside out
+# round the mean of wing mm to 1 SF
+
+```
+
+```{r}
+wing_mm |> mean() |> round(1)
+# read left to right: same answer
+```
+
+Shortcut: **Ctrl + Shift + M** (Mac: **Cmd + Shift + M**).
+
+`%>%` and `|>` are essentially the same.
+
+## Step 1: Import
+
+```{r}
+ticks <- read_csv("data/tick_drags.csv")
+sites <- read_csv("data/sites.csv")
+```
+
+## Step 2: Look
+
+```{r}
+glimpse(ticks)
+```
+
+```{r}
+summary(ticks)
+```
+
+**Your turn:** Look at the `summary()` output. Which columns have
+missing values (`NA's`)?
+
+**Your answer:**
+
+`count()` shows each value in a column and how many times it appears:
+
+```{r}
+count(ticks, site)
+```
+
+**Your turn:**There are only 6 sites (S01 to S06). What went wrong?
+
+**Your answer:**
+
+## Step 3: Clean
+
+`mutate()` changes or adds a column. `toupper()` makes text upper case.
+
+```{r}
+ticks <- ticks |>
+  mutate(site = toupper(site))
+
+count(ticks, site)
+```
+
+**Your turn:** Check the `species` column the same way.
+
+```{r}
+count(ticks, ___)
+```
+
+## Step 4: Add columns
+
+```{r}
+ticks <- ticks %>% 
+  mutate(total = larvae + nymphs + adults)
+
+ticks
+```
+
+**Your turn:** Add a column `temp_f` with the temperature in Fahrenheit.
+(°F = °C × 9 / 5 + 32)
+
+```{r}
+ticks <- ticks |>
+  mutate(temp_f = ___)
+
+ticks
+```
+
+## Step 5: Combine tables
+
+The habitat for each site is in the `sites` table. `left_join()` matches
+rows by `site` and adds the habitat and county columns.
+
+```{r}
+ticks <- left_join(ticks, sites, by = "site")
+ticks
+```
+
+## Step 6: Pick rows and columns
+
+`filter()` keeps rows that match a condition. Note the double `==`.
+
+```{r}
+lone_star <- ticks |>
+  filter(species == "Amblyomma americanum")
+
+lone_star
+```
+
+`select()` keeps columns. `arrange()` sorts rows. `desc()` means largest
+first.
+
+```{r}
+lone_star |>
+  select(site, habitat, date, nymphs) |>
+  arrange(desc(nymphs))
+```
+
+**Your turn:** Keep only the *Dermacentor variabilis* rows from
+grassland.
+
+```{r}
+ticks |>
+  filter(species == ___, habitat == ___)
+```
+
+## Step 7: Summarize
+
+`group_by()` splits the data into groups. `summarise()` calculates one
+number per group.
+
+```{r}
+lone_star |>
+  group_by(habitat) |>
+  summarise(mean_nymphs = mean(nymphs))
+```
+
+One habitat shows `NA`. That's the missing nymph count from Step 2.
+
+**Your turn:** Fix it.
+
+```{r}
+lone_star |>
+  group_by(habitat) |>
+  summarise(mean_nymphs = mean(nymphs, ___))
+```
+
+**Your turn:** Find the total number of adults of each species.
+
+```{r}
+ticks |>
+  group_by(___) |>
+  summarise(total_adults = ___)
+```
+
+## Step 8: Plot
+
+Every `ggplot` has the same parts:
+
+- `ggplot(data, aes(x = ..., y = ...))`: which data, and what goes on
+  each axis
+- `+ geom_...()`: what kind of plot (points, lines, boxes)
+
+```{r}
+ggplot(lone_star, aes(x = habitat, y = nymphs)) +
+  geom_boxplot()
+```
+
+The warning about 1 removed row is the missing nymph count.
+
+**Your turn:** Add the individual drags as points with
+`geom_jitter(width = 0.1)`.
+
+```{r}
+ggplot(lone_star, aes(x = habitat, y = nymphs)) +
+  geom_boxplot() +
+  ___
+```
+
+Add labels and a cleaner theme:
+
+```{r}
+ggplot(lone_star, aes(x = habitat, y = nymphs)) +
+  geom_boxplot() +
+  labs(x = "Habitat", y = "Nymphs per drag", title = "Lone star tick nymphs") +
+  theme_bw()
+```
+
+**When is each life stage active?** First, stack the three life-stage
+columns into one (like we did with the mosquito weeks):
+
+```{r}
+lone_star_long <- lone_star |>
+  pivot_longer(cols = c(larvae, nymphs, adults),
+               names_to = "stage",
+               values_to = "count")
+
+lone_star_long
+```
+
+Then average each stage on each date, and plot it:
+
+```{r}
+stage_by_date <- lone_star_long |>
+  group_by(date, stage) |>
+  summarise(mean_count = mean(count, na.rm = TRUE))
+
+stage_by_date
+```
+
+The message about "grouped output" is just information. You can ignore
+it.
+
+```{r}
+ggplot(stage_by_date, aes(x = date, y = mean_count, color = stage)) +
+  geom_line() +
+  geom_point()
+```
+
+**Your turn:** Which life stage is active first, and which is active
+last?
+
+**Your answer:**
+
+**Your turn:** Make a boxplot of *Dermacentor variabilis* adults by
+habitat.
+
+```{r}
+dog_tick <- ticks |>
+  filter(species == ___)
+
+ggplot(dog_tick, aes(x = ___, y = ___)) +
+  geom_boxplot()
+```
+
+## Step 9: Save your results
+
+First, make an `output` folder (this does nothing if it already exists):
+
+```{r}
+dir.create("output", showWarnings = FALSE)
+```
+
+Save a table as a CSV:
+
+```{r}
+nymph_summary <- lone_star |>
+  group_by(habitat) |>
+  summarise(mean_nymphs = mean(nymphs, na.rm = TRUE))
+
+write_csv(nymph_summary, "output/nymph_summary.csv")
+```
+
+Save a figure: store the plot in an object, then use `ggsave()`.
+
+```{r}
+nymph_plot <- ggplot(lone_star, aes(x = habitat, y = nymphs)) +
+  geom_boxplot()
+
+ggsave("output/nymph_boxplot.png", nymph_plot, width = 6, height = 4)
+```
+
+Look in the `output` folder in the Files pane.
+
+**Your turn:** Save the cleaned `ticks` table as
+`output/ticks_clean.csv`.
+
+```{r}
+write_csv(___)
+```
+
+## The whole workflow in one place
+
+This chunk does Steps 1 to 5 in one go. A script like this is a complete
+record of what you did, and anyone can rerun it.
+
+```{r}
+ticks_clean <- read_csv("data/tick_drags.csv") |>
+  mutate(site = toupper(site)) |>
+  mutate(total = larvae + nymphs + adults) |>
+  left_join(sites, by = "site")
+
+ticks_clean
+```
+
+# Part 8: Challenges
+
+Try these on your own. Each one uses things from Part 7.
+
+**Challenge 1:** Which site and date had the most lone star nymphs on a
+single drag? (Hint: `arrange(desc(...))`)
+
+```{r}
+# your code here
+```
+
+**Challenge 2:** What was the mean temperature (C) in each habitat?
+(Hint: there are missing values.)
+
+```{r}
+# your code here
+```
+
+**Challenge 3:** Make a scatter plot of temperature (x) against lone
+star nymphs (y). (Hint: `geom_point()`)
+
+```{r}
+# your code here
+```
+
+# Good habits to take with you
+
+- Write code in a file (`.R` or `.Rmd`), not just the Console
+- Keep each project in its own folder with an `.Rproj` file.
+- Never edit raw data by hand
+- Use comments (`#`) to explain *why* you did something.
+- Restart R now and then (*Session → Restart R*) and rerun your file
+  from the top to make sure it still works
+
+**Where to get help:** - `?function_name` for help pages - Copy the
+error message into a search engine - *R for Data Science* (free online):
+<https://r4ds.hadley.nz> - Data Carpentry, *R for Ecologists*:
+<https://datacarpentry.org/R-ecology-lesson/> - Posit cheat sheets:
+<https://posit.co/resources/cheatsheets/>
